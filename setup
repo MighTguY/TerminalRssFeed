@@ -1,0 +1,34 @@
+#!/bin/bash
+php=$(which php)
+pwd=$(pwd)
+
+if [  -z "$php" ]; then echo "PHP NOT FOUND .. Please Install PHP first "; exit; fi
+
+export USER="$USER"
+FILE="/home/"
+FILE="$FILE$USER/.bashrc"
+
+echo "php /home/$USER/.news/file/rss.php"
+FILE="/home/$USER/.news"
+mkdir $FILE 
+cp -pr ./files $FILE
+cp -pr ./scripts $FILE
+cp -pr ./config $FILE
+
+cd $FILE
+mkdir "$FILE/logs"
+mkdir "$FILE/data"
+
+[ -x $FILE/scripts/cron.sh ] && X="yes" || X="no"
+
+if [ "$X" == "no" ]
+then 
+
+echo "change permissons of file $FILE/scripts/cron.sh to executable| attempt to change "
+chmod +x $FILE/scripts/cron.sh
+fi
+
+(crontab -l 2>/dev/null; echo "0 */5  * * * $FILE/scripts/cron.sh") | crontab -
+
+cd $pwd
+bash
